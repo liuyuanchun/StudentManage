@@ -18,7 +18,7 @@ public class StudentDaoMySqlImpl implements IStudentDao{
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		connection = JdbcUtil.getConnection();
-		String sql = "INSERT INTO student(NAME,age,sex) VALUES (?,?,?);";
+		String sql = "INSERT INTO student(NAME,age,gender) VALUES (?,?,?);";
 		boolean result = false;
 		try {
 			preparedStatement = connection.prepareStatement(sql);
@@ -69,7 +69,7 @@ public class StudentDaoMySqlImpl implements IStudentDao{
 		PreparedStatement preparedStatement = null;
 		connection = JdbcUtil.getConnection();
 		boolean result = false;
-		String sql = "UPDATE student SET NAME = ?,age =?,sex = ? WHERE id =?;";
+		String sql = "UPDATE student SET NAME = ?,age =?,gender = ? WHERE id =?;";
 		try {
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setString(1, student.getName());
@@ -107,7 +107,7 @@ public class StudentDaoMySqlImpl implements IStudentDao{
 				int studentId = resultSet.getInt("id");
 				String 	name = resultSet.getString("name");
 				int age = resultSet.getInt("age");
-				String gender = resultSet.getString("sex");
+				String gender = resultSet.getString("gender");
 				student = new Student(studentId,name,age,gender);
 			}
 			
@@ -134,7 +134,7 @@ public class StudentDaoMySqlImpl implements IStudentDao{
 				int id = resultSet.getInt("id");
 				String name = resultSet.getString("name");
 				int age = resultSet.getInt("age");
-				String gender = resultSet.getString("sex");
+				String gender = resultSet.getString("gender");
 			    student = new Student(id,name,age,gender);
 			    list.add(student);
 			}
@@ -146,5 +146,27 @@ public class StudentDaoMySqlImpl implements IStudentDao{
 		return list;
 	}
 
-
+	@Override
+	public boolean checkStudent(String name) {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		Student student = null;
+		boolean isFound = false;
+		String sql = "SELECT * FROM student WHERE NAME = ?;";
+		try {
+			connection = JdbcUtil.getConnection();
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, name);
+			resultSet = preparedStatement.executeQuery();
+			if(resultSet.next()){
+				isFound = true;
+			}else{
+				isFound = false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return isFound;
+	}
 }
